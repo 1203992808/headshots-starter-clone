@@ -1,4 +1,4 @@
-import ClientSideModelsList from "@/components/realtime/ClientSideModelsList";
+import ClientSideModelsList from "@/components/realtime/ClientSideModelsList.jsx";
 import { Database } from "@/types/supabase";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
