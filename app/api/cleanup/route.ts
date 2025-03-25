@@ -10,7 +10,16 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
 
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
+// Support both GET and POST methods for easier testing
+export async function GET(request: Request) {
+  return handleCleanup(request);
+}
+
 export async function POST(request: Request) {
+  return handleCleanup(request);
+}
+
+async function handleCleanup(request: Request) {
   try {
     // Get all models that are older than 20 minutes
     const twentyMinutesAgo = new Date(Date.now() - 20 * 60 * 1000).toISOString();
