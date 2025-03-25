@@ -10,12 +10,20 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa";
 import ExpirationTimer from "@/components/ExpirationTimer";
+import { Database } from "@/types/supabase";
+import { imageRow, modelRow, sampleRow } from "@/types/utils";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
 
-export default async function ModelDetail({ params }) {
-  const supabase = createServerComponentClient({ cookies });
+interface ModelDetailProps {
+  params: {
+    id: string;
+  };
+}
+
+export default async function ModelDetail({ params }: ModelDetailProps) {
+  const supabase = createServerComponentClient<Database>({ cookies });
   const {
     data: { user },
   } = await supabase.auth.getUser();
