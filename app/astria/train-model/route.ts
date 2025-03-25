@@ -12,7 +12,7 @@ const packsIsEnabled = process.env.NEXT_PUBLIC_TUNE_TYPE === "packs";
 // For local development, recommend using an Ngrok tunnel for the domain
 
 const appWebhookSecret = process.env.APP_WEBHOOK_SECRET;
-const stripeIsConfigured = process.env.NEXT_PUBLIC_STRIPE_IS_ENABLED === "true";
+const stripeIsConfigured = false; // 强制设置为 false，禁用 Stripe 检查
 
 if (!appWebhookSecret) {
   throw new Error("MISSING APP_WEBHOOK_SECRET!");
@@ -62,6 +62,8 @@ export async function POST(request: Request) {
   }
   let _credits = null;
 
+  // 注释掉所有 Stripe 相关检查
+  /*
   console.log({ stripeIsConfigured });
   if (stripeIsConfigured) {
     const { error: creditError, data: credits } = await supabase
@@ -117,6 +119,7 @@ export async function POST(request: Request) {
       _credits = credits;
     }
   }
+  */
 
   // create a model row in supabase
   const { error: modelError, data } = await supabase
@@ -248,6 +251,8 @@ export async function POST(request: Request) {
       );
     }
 
+    // 注释掉扣除积分的代码
+    /*
     if (stripeIsConfigured && _credits && _credits.length > 0) {
       const subtractedCredits = _credits[0].credits - 1;
       const { error: updateCreditError, data } = await supabase
@@ -269,6 +274,7 @@ export async function POST(request: Request) {
         );
       }
     }
+    */
   } catch (e) {
     console.error(e);
     // Rollback: Delete the created model if something goes wrong
