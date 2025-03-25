@@ -23,10 +23,6 @@ export async function POST(request: Request) {
 
 async function handleCleanup(request: Request) {
   try {
-    // Parse the request to check if we're targeting a specific user
-    const url = new URL(request.url);
-    const targetEmail = url.searchParams.get('email');
-    
     // Get current authenticated user
     const supabaseAuth = createServerComponentClient({ cookies });
     const {
@@ -38,37 +34,19 @@ async function handleCleanup(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     
-    // Get all models that are older than 20 minutes
+    // 只允许特定的管理员用户使用清理功能
+    if (user.email !== "1203992808@qq.com") {
+      return NextResponse.json({ error: "Forbidden. Only admin can perform this operation." }, { status: 403 });
+    }
+    
+    // Get all models that are older than 20 minutes and have status "finished"
     const twentyMinutesAgo = new Date(Date.now() - 20 * 60 * 1000).toISOString();
     
-    let query = supabase
+    const { data: expiredModels, error: modelsError } = await supabase
       .from("models")
-      .select("id, user_id")
+      .select("id")
       .lt("created_at", twentyMinutesAgo)
       .eq("status", "finished");
-    
-    // If targeting a specific user (1203992808@qq.com)
-    if (targetEmail === "1203992808@qq.com") {
-      // First, find the user ID for this email
-      const { data: userData } = await supabase
-        .from("users")
-        .select("id")
-        .eq("email", "1203992808@qq.com")
-        .single();
-        
-      if (userData && userData.id) {
-        query = query.eq("user_id", userData.id);
-      } else {
-        return NextResponse.json({ message: "Target user not found" });
-      }
-    } else {
-      // Only admin or the target user themselves can clean their own models
-      if (user.email !== "1203992808@qq.com" && !user.app_metadata?.admin) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
-    }
-
-    const { data: expiredModels, error: modelsError } = await query;
 
     if (modelsError) {
       console.error("Error fetching expired models:", modelsError);
@@ -115,7 +93,7 @@ async function handleCleanup(request: Request) {
     }
 
     return NextResponse.json({ 
-      message: `Successfully cleaned up ${modelIds.length} expired models` 
+      message: `成功清理了 ${modelIds.length} 个过期模型及其关联的图片` 
     });
   } catch (error) {
     console.error("Cleanup error:", error);

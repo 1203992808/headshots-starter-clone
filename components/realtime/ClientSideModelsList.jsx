@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FaImages, FaTrash, FaBroom } from "react-icons/fa";
+import { FaImages, FaBroom } from "react-icons/fa";
 import ModelsTable from "../ModelsTable.jsx";
 
 // Force dynamic rendering to avoid cookies error
@@ -61,9 +61,9 @@ export default function ClientSideModelsList({ serverModels }) {
       supabase.removeChannel(channel);
     };
   }, [supabase, models, setModels]);
-
-  // Function to manually clean expired models
-  const handleCleanExpiredModels = async () => {
+  
+  // Function to clean all expired models across all users
+  const handleCleanAllExpiredModels = async () => {
     try {
       setIsLoading(true);
       setMessage(null);
@@ -78,36 +78,7 @@ export default function ClientSideModelsList({ serverModels }) {
       const data = await response.json();
       
       if (response.ok) {
-        setMessage({ type: "success", text: data.message || "清理完成！" });
-        // 刷新模型列表，可通过重新获取或让实时订阅自动更新
-      } else {
-        setMessage({ type: "error", text: data.error || "清理失败，请重试。" });
-      }
-    } catch (error) {
-      console.error("清理错误:", error);
-      setMessage({ type: "error", text: "发生错误，请重试。" });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Function to clean specified user's models
-  const handleCleanSpecificUserModels = async () => {
-    try {
-      setIsLoading(true);
-      setMessage(null);
-      
-      const response = await fetch("/api/cleanup?email=1203992808@qq.com", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        setMessage({ type: "success", text: data.message || "指定用户模型清理完成！" });
+        setMessage({ type: "success", text: data.message || "清理完成！所有过期模型已被删除。" });
       } else {
         setMessage({ type: "error", text: data.error || "清理失败，请重试。" });
       }
@@ -119,11 +90,8 @@ export default function ClientSideModelsList({ serverModels }) {
     }
   };
 
-  // Check if the current user is the target user or an admin
-  const isTargetUserOrAdmin = user && (
-    user.email === "1203992808@qq.com" || 
-    user.app_metadata?.admin
-  );
+  // 检查当前用户是否是指定的管理员账户
+  const isAdminUser = user && user.email === "1203992808@qq.com";
 
   return (
     <div id="train-model-container" className="w-full">
@@ -132,27 +100,16 @@ export default function ClientSideModelsList({ serverModels }) {
           <div className="flex flex-row gap-4 w-full justify-between items-center text-center">
             <h1>Your models</h1>
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleCleanExpiredModels} 
-                disabled={isLoading}
-                className="flex items-center gap-1"
-              >
-                <FaTrash className="w-3 h-3" />
-                {isLoading ? "清理中..." : "清理过期"}
-              </Button>
-              
-              {isTargetUserOrAdmin && (
+              {isAdminUser && (
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={handleCleanSpecificUserModels} 
+                  onClick={handleCleanAllExpiredModels} 
                   disabled={isLoading}
                   className="flex items-center gap-1 bg-amber-50 hover:bg-amber-100 border-amber-200"
                 >
                   <FaBroom className="w-3 h-3" />
-                  {isLoading ? "清理中..." : "清理指定用户"}
+                  {isLoading ? "清理中..." : "清理所有过期模型"}
                 </Button>
               )}
               
