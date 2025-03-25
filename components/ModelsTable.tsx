@@ -37,6 +37,7 @@ export default async function ModelsTable({ models }: ModelsTableProps) {
             <TableHead>Status</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Samples</TableHead>
+            <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -76,6 +77,15 @@ export default async function ModelsTable({ models }: ModelsTableProps) {
                     </Badge>
                   )}
                 </div>
+              </TableCell>
+              <TableCell>
+                {model.status === "finished" && (
+                  <Link href={`/overview/models/${model.id}`} onClick={(e) => e.stopPropagation()}>
+                    <Button variant="outline" size="sm">
+                      View
+                    </Button>
+                  </Link>
+                )}
               </TableCell>
             </TableRow>
           ))}
