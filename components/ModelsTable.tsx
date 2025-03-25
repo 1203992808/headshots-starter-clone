@@ -8,25 +8,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-
-import { Database } from "@/types/supabase";
 import { Icons } from "./icons";
-import { useRouter } from "next/navigation";
 import { modelRowWithSamples } from "@/types/utils";
 
-type ModelsTableProps = {
-  models: modelRowWithSamples[];
-};
+export default function ModelsTable({ models }) {
+  function handleRedirect(id) {
+    window.location.href = `/overview/models/${id}`;
+  }
 
-export default async function ModelsTable({ models }: ModelsTableProps) {
-  const router = useRouter();
-  const handleRedirect = (id: number) => {
-    router.push(`/overview/models/${id}`);
-  };
+  function handleViewClick(e, id) {
+    e.stopPropagation();
+    window.location.href = `/overview/models/${id}`;
+  }
 
   return (
     <div className="rounded-md border">
@@ -49,19 +45,16 @@ export default async function ModelsTable({ models }: ModelsTableProps) {
             >
               <TableCell className="font-medium">{model.name}</TableCell>
               <TableCell>
-                <div>
-                  <Badge
-                    className="flex gap-2 items-center w-min"
-                    variant={
-                      model.status === "finished" ? "default" : "secondary"
-                    }
-                  >
-                    {model.status === "processing" ? "training" : model.status }
-                    {model.status === "processing" && (
-                      <Icons.spinner className="h-4 w-4 animate-spin" />
-                    )}
-                  </Badge>
-                </div>
+                <Badge
+                  variant={
+                    model.status === "finished" ? "default" : "secondary"
+                  }
+                >
+                  {model.status === "processing" ? "training" : model.status}
+                  {model.status === "processing" && (
+                    <Icons.spinner className="h-4 w-4 animate-spin ml-2" />
+                  )}
+                </Badge>
               </TableCell>
               <TableCell>{model.type}</TableCell>
               <TableCell>
@@ -72,7 +65,7 @@ export default async function ModelsTable({ models }: ModelsTableProps) {
                     </Avatar>
                   ))}
                   {model.samples.length > 3 && (
-                    <Badge className="rounded-full h-10" variant={"outline"}>
+                    <Badge variant="outline" className="rounded-full h-10">
                       +{model.samples.length - 3}
                     </Badge>
                   )}
@@ -80,11 +73,13 @@ export default async function ModelsTable({ models }: ModelsTableProps) {
               </TableCell>
               <TableCell>
                 {model.status === "finished" && (
-                  <Link href={`/overview/models/${model.id}`} onClick={(e) => e.stopPropagation()}>
-                    <Button variant="outline" size="sm">
-                      View
-                    </Button>
-                  </Link>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={(e) => handleViewClick(e, model.id)}
+                  >
+                    View
+                  </Button>
                 )}
               </TableCell>
             </TableRow>
