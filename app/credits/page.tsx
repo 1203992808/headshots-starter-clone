@@ -1,14 +1,13 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import CheckInButton from "@/components/CheckInButton";
 import Link from "next/link";
-import ClientSideCredits from "@/components/realtime/ClientSideCredits";
-
-export const dynamic = "force-dynamic";
+import { FaCoins, FaImage, FaCalendarCheck } from 'react-icons/fa';
 
 export default async function CreditsPage() {
-  const supabase = createServerComponentClient({ cookies });
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   const {
     data: { user },
@@ -24,49 +23,55 @@ export default async function CreditsPage() {
     .eq("user_id", user.id)
     .single();
 
-  const isSpecialUser = user.email === "1203992808@qq.com";
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Your Credits</h1>
-      
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-          <div className="mb-4 md:mb-0">
-            <h2 className="text-xl font-semibold mb-2">Current Balance</h2>
-            <ClientSideCredits creditsRow={credits ? credits : null} />
-          </div>
-          
-          <div className="flex flex-col gap-2">
-            <Link href="/overview">
-              <Button variant="outline">Back to Home</Button>
-            </Link>
+    <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4">
+      <div className="w-full max-w-3xl">
+        <h1 className="text-4xl font-bold mb-12 text-center text-gray-800">Your Credits</h1>
+        
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 transform transition hover:shadow-xl">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800">Current Balance</h2>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <FaCoins className="text-yellow-500 text-3xl mr-3" />
+              <span className="text-4xl font-bold text-gray-800">Credits: {credits?.credits || 0}</span>
+            </div>
+            <CheckInButton className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition transform hover:scale-105" />
           </div>
         </div>
-        
-        <div className="mt-6 border-t pt-4">
-          <h3 className="text-lg font-semibold mb-3">How Credits Work</h3>
-          <ul className="list-disc pl-5 space-y-2">
-            <li>New users receive 3 credits when they join</li>
-            <li>Each image generation costs 3 credits</li>
-            <li>You can check in once per day to receive 1 credit</li>
-            {isSpecialUser && (
-              <li className="text-blue-600 font-medium">As a special user, your account always maintains 10,000 credits</li>
-            )}
-          </ul>
+
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800">How Credits Work</h2>
+          <div className="space-y-6">
+            <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+              <FaCoins className="text-yellow-500 text-2xl mr-4" />
+              <p className="text-lg text-gray-700">New users receive 3 credits when they join</p>
+            </div>
+            <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+              <FaImage className="text-blue-500 text-2xl mr-4" />
+              <p className="text-lg text-gray-700">Each image generation costs 3 credits</p>
+            </div>
+            <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+              <FaCalendarCheck className="text-green-500 text-2xl mr-4" />
+              <p className="text-lg text-gray-700">You can check in once per day to receive 1 credit</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-8">
+          <h3 className="text-xl font-semibold text-yellow-800 mb-2">Note:</h3>
+          <p className="text-yellow-700 mb-2">You need at least 3 credits to generate an image.</p>
+          <p className="text-yellow-700">Remember to check in daily to accumulate more credits!</p>
+        </div>
+
+        <div className="text-center">
+          <Link 
+            href="/" 
+            className="inline-block bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-8 rounded-lg transition transform hover:scale-105"
+          >
+            Back to Home
+          </Link>
         </div>
       </div>
-      
-      {!isSpecialUser && credits && credits.credits < 3 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-800 mb-2">
-            <strong>Note:</strong> You need at least 3 credits to generate an image.
-          </p>
-          <p className="text-yellow-700">
-            Remember to check in daily to accumulate more credits!
-          </p>
-        </div>
-      )}
     </div>
   );
 } 
