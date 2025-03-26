@@ -4,6 +4,7 @@ import { Database } from "@/types/supabase";
 import { creditsRow } from "@/types/utils";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
+import CheckInButton from "../CheckInButton";
 
 export const revalidate = 0;
 
@@ -14,18 +15,15 @@ type ClientSideCreditsProps = {
 export default function ClientSideCredits({
   creditsRow,
 }: ClientSideCreditsProps) {
-
-  if (!creditsRow) return (
-    <p>Credits: 0</p>
-  )
-
   const supabase = createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL as string,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
   );
-  const [credits, setCredits] = useState<creditsRow>(creditsRow);
+  const [credits, setCredits] = useState<creditsRow | null>(creditsRow);
 
   useEffect(() => {
+    if (!credits) return;
+
     const channel = supabase
       .channel("realtime credits")
       .on(
@@ -42,9 +40,20 @@ export default function ClientSideCredits({
     };
   }, [supabase, credits, setCredits]);
 
-  if (!credits) return null;
+  // Handler for when check-in is completed
+  const handleCheckInComplete = (newCredits: number) => {
+    if (credits) {
+      setCredits({
+        ...credits,
+        credits: newCredits,
+      });
+    }
+  };
 
   return (
-    <p>Credits: {credits.credits}</p>
+    <div className="flex items-center">
+      <p>Credits: {credits?.credits || 0}</p>
+      <CheckInButton onCheckInComplete={handleCheckInComplete} />
+    </div>
   );
 }

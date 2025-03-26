@@ -53,6 +53,9 @@ export default async function Navbar() {
               <Button variant={"ghost"}>Packs</Button>
             </Link>
           )}
+          <Link href="/credits">
+            <Button variant={"ghost"}>My Credits</Button>
+          </Link>
           {stripeIsConfigured && (
             <Link href="/get-credits">
               <Button variant={"ghost"}>Get Credits</Button>
@@ -68,9 +71,11 @@ export default async function Navbar() {
         )}
         {user && (
           <div className="flex flex-row gap-4 text-center align-middle justify-center">
-            {stripeIsConfigured && (
-              <ClientSideCredits creditsRow={credits ? credits : null} />
-            )}
+            <Link href="/credits">
+              <div className="cursor-pointer">
+                <ClientSideCredits creditsRow={credits ? credits : null} />
+              </div>
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="cursor-pointer">
                 <AvatarIcon height={24} width={24} className="text-primary" />

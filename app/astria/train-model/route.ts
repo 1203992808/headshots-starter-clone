@@ -60,66 +60,76 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-  let _credits = null;
-
-  // 注释掉所有 Stripe 相关检查
-  /*
-  console.log({ stripeIsConfigured });
-  if (stripeIsConfigured) {
-    const { error: creditError, data: credits } = await supabase
+  
+  // Special case for the specific email
+  if (user.email === "1203992808@qq.com") {
+    // Get or create credits for this special user
+    const { data: specialCredits, error: specialCreditError } = await supabase
       .from("credits")
-      .select("credits")
-      .eq("user_id", user.id);
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
 
-    if (creditError) {
-      console.error({ creditError });
-      return NextResponse.json(
-        {
-          message: "Something went wrong!",
-        },
-        { status: 500 }
-      );
-    }
-
-    if (credits.length === 0) {
-      // create credits for user.
-      const { error: errorCreatingCredits } = await supabase
+    if (specialCreditError) {
+      // Create credits record with 10000 credits
+      await supabase
         .from("credits")
         .insert({
           user_id: user.id,
-          credits: 0,
+          credits: 10000,
+        });
+    } else if (specialCredits.credits !== 10000) {
+      // Ensure credits are always 10000
+      await supabase
+        .from("credits")
+        .update({
+          credits: 10000,
+        })
+        .eq("user_id", user.id);
+    }
+  } else {
+    // For regular users, check credits and deduct them
+    const { data: credits, error: creditError } = await supabase
+      .from("credits")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+
+    if (creditError) {
+      // Create credits for new user with 3 initial credits, but they need more to generate an image
+      await supabase
+        .from("credits")
+        .insert({
+          user_id: user.id,
+          credits: 3,
         });
 
-      if (errorCreatingCredits) {
-        console.error({ errorCreatingCredits });
-        return NextResponse.json(
-          {
-            message: "Something went wrong!",
-          },
-          { status: 500 }
-        );
-      }
-
       return NextResponse.json(
         {
-          message:
-            "Not enough credits, please purchase some credits and try again.",
+          message: "You need 3 credits to generate an image. Please check in daily to accumulate credits.",
         },
-        { status: 500 }
+        { status: 400 }
       );
-    } else if (credits[0]?.credits < 1) {
-      return NextResponse.json(
-        {
-          message:
-            "Not enough credits, please purchase some credits and try again.",
-        },
-        { status: 500 }
-      );
-    } else {
-      _credits = credits;
     }
+
+    // Check if user has enough credits (3 required)
+    if (credits.credits < 3) {
+      return NextResponse.json(
+        {
+          message: `Not enough credits. You have ${credits.credits} credits, but need 3 to generate an image. Please check in daily to accumulate more credits.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Deduct 3 credits for image generation
+    await supabase
+      .from("credits")
+      .update({
+        credits: credits.credits - 3,
+      })
+      .eq("user_id", user.id);
   }
-  */
 
   // create a model row in supabase
   const { error: modelError, data } = await supabase
@@ -250,31 +260,6 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
-
-    // 注释掉扣除积分的代码
-    /*
-    if (stripeIsConfigured && _credits && _credits.length > 0) {
-      const subtractedCredits = _credits[0].credits - 1;
-      const { error: updateCreditError, data } = await supabase
-        .from("credits")
-        .update({ credits: subtractedCredits })
-        .eq("user_id", user.id)
-        .select("*");
-
-      console.log({ data });
-      console.log({ subtractedCredits });
-
-      if (updateCreditError) {
-        console.error({ updateCreditError });
-        return NextResponse.json(
-          {
-            message: "Something went wrong!",
-          },
-          { status: 500 }
-        );
-      }
-    }
-    */
   } catch (e) {
     console.error(e);
     // Rollback: Delete the created model if something goes wrong
