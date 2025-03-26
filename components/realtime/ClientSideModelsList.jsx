@@ -96,33 +96,33 @@ export default function ClientSideModelsList({ serverModels }) {
   return (
     <div id="train-model-container" className="w-full">
       {models && models.length > 0 && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           <div className="flex flex-row gap-4 w-full justify-between items-center text-center">
-            <h1>Your models</h1>
-            <div className="flex gap-2">
+            <h1 className="text-2xl font-bold text-slate-800">Your Portrait Collection</h1>
+            <div className="flex gap-3">
               {isAdminUser && (
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={handleCleanAllExpiredModels} 
                   disabled={isLoading}
-                  className="flex items-center gap-1 bg-amber-50 hover:bg-amber-100 border-amber-200"
+                  className="flex items-center gap-2 bg-orange-50 hover:bg-orange-100 border-orange-200 text-orange-700 px-4 py-2 rounded-xl transition-all duration-300"
                 >
                   <FaBroom className="w-3 h-3" />
-                  {isLoading ? "清理中..." : "清理所有过期模型"}
+                  {isLoading ? "Processing..." : "Remove Expired Models"}
                 </Button>
               )}
               
               <Link href={packsIsEnabled ? "/overview/packs" : "/overview/models/train/raw-tune"} className="w-fit">
-                <Button size="sm">
-                  Train model
+                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 px-4 py-2 rounded-xl transition-all duration-300 shadow-md">
+                  Create New Portrait
                 </Button>
               </Link>
             </div>
           </div>
           
           {message && (
-            <div className={`p-3 rounded-md ${message.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
+            <div className={`p-4 rounded-xl ${message.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
               {message.text}
             </div>
           )}
@@ -131,14 +131,19 @@ export default function ClientSideModelsList({ serverModels }) {
         </div>
       )}
       {models && models.length === 0 && (
-        <div className="flex flex-col gap-4 items-center">
-          <FaImages size={64} className="text-gray-500" />
-          <h1 className="text-2xl">
-            Get started by training your first model.
+        <div className="flex flex-col gap-6 items-center py-12 bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl shadow-sm mt-4">
+          <FaImages size={72} className="text-blue-500 opacity-80" />
+          <h1 className="text-2xl font-bold text-slate-700">
+            Begin your portrait journey today
           </h1>
-          <div>
+          <p className="text-slate-600 max-w-md text-center">
+            Create your first personalized AI portrait collection with our advanced technology.
+          </p>
+          <div className="mt-4">
             <Link href={packsIsEnabled ? "/overview/packs" : "/overview/models/train/raw-tune"}>
-              <Button size="lg">Train model</Button>
+              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 px-8 py-6 rounded-xl text-lg font-medium transition-all duration-300 shadow-lg">
+                Create Your First Portrait
+              </Button>
             </Link>
           </div>
         </div>

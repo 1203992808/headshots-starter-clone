@@ -4,61 +4,63 @@ import result from "/public/result.png";
 
 export default function ExplainerSection() {
   return (
-    <div className="w-full max-w-6xl mt-16 p-8 bg-gray-100 rounded-lg space-y-8">
-      <h2 className="text-3xl font-bold text-center mb-8">How It Works</h2>
+    <div className="w-full max-w-6xl mt-20 p-10 bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl shadow-sm space-y-10">
+      <h2 className="text-3xl font-bold text-center mb-10 text-slate-800">Your Portrait Creation Journey</h2>
 
       {/* Step 1: Upload your images */}
-      <div className="space-y-4">
+      <div className="space-y-5 hover:transform hover:scale-[1.02] transition-all duration-300">
         <div className="flex items-center justify-center space-x-4">
-          <div className="text-3xl font-bold text-blue-600 bg-white border-2 border-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
+          <div className="text-3xl font-bold text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-full w-12 h-12 flex items-center justify-center shadow-md">
             1
           </div>
-          <h3 className="text-2xl font-semibold">Upload your images</h3>
+          <h3 className="text-2xl font-semibold text-slate-700">Capture Your Best Self</h3>
         </div>
-        <p className="text-sm text-gray-600 text-center">
-          Upload 4+ high-quality selfies: front facing, 1 person in frame, no
-          glasses or hats.
+        <p className="text-sm text-slate-600 text-center leading-relaxed max-w-2xl mx-auto">
+          Simply upload 4+ quality selfies with clear facial features. For optimal results, ensure photos are well-lit, 
+          front-facing, and show only one person without accessories obscuring your face.
         </p>
         <img
           src={example.src}
-          alt="AI Headshot example"
-          className="rounded-lg object-cover w-full md:w-3/4 lg:w-1/2 mx-auto"
+          alt="Portrait input examples"
+          className="rounded-xl object-cover w-full md:w-3/4 lg:w-1/2 mx-auto shadow-lg"
         />
       </div>
 
       {/* Step 2: Train your model */}
-      <div className="space-y-4">
+      <div className="space-y-5 hover:transform hover:scale-[1.02] transition-all duration-300">
         <div className="flex items-center justify-center space-x-4">
-          <div className="text-3xl font-bold text-blue-600 bg-white border-2 border-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
+          <div className="text-3xl font-bold text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-full w-12 h-12 flex items-center justify-center shadow-md">
             2
           </div>
-          <h3 className="text-2xl font-semibold">Our AI gets to work</h3>
+          <h3 className="text-2xl font-semibold text-slate-700">Advanced AI Processing</h3>
         </div>
-        <p className="text-sm text-gray-600 text-center">
-          The AI magic takes ~20 minutes. You'll get an email when its ready!
+        <p className="text-sm text-slate-600 text-center leading-relaxed max-w-2xl mx-auto">
+          Our sophisticated algorithms analyze your features and create a personalized model in approximately 20 minutes. 
+          We'll notify you via email once your custom portrait system is ready for exploration.
         </p>
         <img
           src={blur.src}
-          alt="AI Headshot blur"
-          className="rounded-lg object-cover w-full md:w-3/4 lg:w-1/2 mx-auto"
+          alt="AI processing visualization"
+          className="rounded-xl object-cover w-full md:w-3/4 lg:w-1/2 mx-auto shadow-lg"
         />
       </div>
 
       {/* Step 3: Generate images */}
-      <div className="space-y-4">
+      <div className="space-y-5 hover:transform hover:scale-[1.02] transition-all duration-300">
         <div className="flex items-center justify-center space-x-4">
-          <div className="text-3xl font-bold text-blue-600 bg-white border-2 border-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
+          <div className="text-3xl font-bold text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-full w-12 h-12 flex items-center justify-center shadow-md">
             3
           </div>
-          <h3 className="text-2xl font-semibold">Get amazing headshots</h3>
+          <h3 className="text-2xl font-semibold text-slate-700">Discover Your Professional Portraits</h3>
         </div>
-        <p className="text-sm text-gray-600 text-center">
-          Once your model is trained, we'll give you amazing headshots!
+        <p className="text-sm text-slate-600 text-center leading-relaxed max-w-2xl mx-auto">
+          Once your custom model is trained, you'll have access to studio-quality portraits that highlight your 
+          professional image. Perfect for enhancing your digital presence across all platforms.
         </p>
         <img
           src={result.src}
-          alt="AI Headshot result"
-          className="rounded-lg object-cover w-full md:w-3/4 lg:w-1/2 mx-auto"
+          alt="Professional portrait results"
+          className="rounded-xl object-cover w-full md:w-3/4 lg:w-1/2 mx-auto shadow-lg"
         />
       </div>
     </div>
