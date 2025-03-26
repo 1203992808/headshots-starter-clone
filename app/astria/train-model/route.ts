@@ -106,7 +106,9 @@ export async function POST(request: Request) {
 
       return NextResponse.json(
         {
+          error: "INSUFFICIENT_CREDITS",
           message: "You need 3 credits to generate an image. Please check in daily to accumulate credits.",
+          currentCredits: 3
         },
         { status: 400 }
       );
@@ -116,7 +118,9 @@ export async function POST(request: Request) {
     if (credits.credits < 3) {
       return NextResponse.json(
         {
+          error: "INSUFFICIENT_CREDITS",
           message: `Not enough credits. You have ${credits.credits} credits, but need 3 to generate an image. Please check in daily to accumulate more credits.`,
+          currentCredits: credits.credits
         },
         { status: 400 }
       );

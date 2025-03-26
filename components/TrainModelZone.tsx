@@ -31,6 +31,8 @@ import * as z from "zod";
 import { fileUploadFormSchema } from "@/types/zod";
 import { upload } from "@vercel/blob/client";
 import axios from "axios";
+import Link from "next/link";
+import CheckInButton from "@/components/CheckInButton";
 
 type FormInput = z.infer<typeof fileUploadFormSchema>;
 
@@ -153,21 +155,40 @@ export default function TrainModelZone({ packSlug }: { packSlug: string }) {
       const responseData = await response.json();
       const responseMessage: string = responseData.message;
       console.error("Something went wrong! ", responseMessage);
-      const messageWithButton = (
-        <div className="flex flex-col gap-4">
-          {responseMessage}
-          <a href="/get-credits">
-            <Button size="sm">Get Credits</Button>
-          </a>
-        </div>
-      );
-      toast({
-        title: "Something went wrong!",
-        description: responseMessage.includes("Not enough credits")
-          ? messageWithButton
-          : responseMessage,
-        duration: 5000,
-      });
+
+      if (responseData.error === "INSUFFICIENT_CREDITS") {
+        const toastContent = (
+          <div className="flex flex-col gap-4">
+            <p>{responseMessage}</p>
+            <div className="flex gap-2">
+              <Link href="/credits">
+                <Button size="sm" variant="outline">View Credits</Button>
+              </Link>
+              <CheckInButton 
+                onCheckInComplete={(newCredits) => {
+                  toast({
+                    title: "Credits Updated",
+                    description: `You now have ${newCredits} credits.`,
+                    duration: 3000,
+                  });
+                }} 
+              />
+            </div>
+          </div>
+        );
+
+        toast({
+          title: "Not Enough Credits",
+          description: toastContent,
+          duration: 8000,
+        });
+      } else {
+        toast({
+          title: "Something went wrong!",
+          description: responseMessage,
+          duration: 5000,
+        });
+      }
       return;
     }
 
